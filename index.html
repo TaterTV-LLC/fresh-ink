@@ -1002,7 +1002,123 @@ const TZ_LABELS = {
 };
 function tzLabel(tz) { return TZ_LABELS[tz] || ""; }
 
-function parseBroadcast(ep) {
+// ── COLOR-SCHEME PREVIEW MOCK DATA ────────────────────────────────────────
+// Returns a hand-crafted payload matching the TVMaze /schedule shape so the
+// UI can be evaluated when the live API is unreachable. Remove this function
+// (and the fallback block in fetchDate) once api.tatertv.app CORS is set up
+// for the preview origin.
+function getMockScheduleData(dk) {
+  const mk = (id, showName, network, isWeb, opts = {}) => ({
+    id,
+    name: opts.epName || "",
+    season: opts.season ?? 2,
+    number: opts.number ?? 4,
+    airtime: opts.airtime || (isWeb ? "" : "20:00"),
+    summary: opts.epSummary || "",
+    show: isWeb ? undefined : {
+      name: showName,
+      network: { name: network, country: { timezone: "America/New_York" } },
+      webChannel: null,
+      genres: opts.genres || ["Drama"],
+      summary: opts.summary || "",
+      rating: { average: opts.rating ?? 8.2 },
+      image: null,
+      type: "Scripted",
+      weight: opts.weight ?? 95,
+      externals: { imdb: null },
+      officialSite: null,
+    },
+    _embedded: isWeb ? {
+      show: {
+        name: showName,
+        webChannel: { name: network, country: { timezone: "America/New_York" } },
+        network: null,
+        genres: opts.genres || ["Drama"],
+        summary: opts.summary || "",
+        rating: { average: opts.rating ?? 8.2 },
+        image: null,
+        type: "Scripted",
+        weight: opts.weight ?? 95,
+        externals: { imdb: null },
+        officialSite: null,
+      }
+    } : undefined,
+    webChannel: isWeb ? { name: network, country: { timezone: "America/New_York" } } : null,
+  });
+
+  return {
+    broadcast: [
+      mk(1001, "Saturday Night Live", "NBC", false, {
+        season: 51, number: 18, airtime: "23:30", genres: ["Comedy"],
+        epName: "Host TBA", rating: 7.5,
+        summary: "Live sketch comedy and music from Studio 8H.",
+      }),
+      mk(1002, "Abbott Elementary", "ABC", false, {
+        season: 5, number: 12, airtime: "20:30", genres: ["Comedy"],
+        epName: "Field Trip", rating: 8.4,
+        summary: "Janine plans an ambitious field trip to the Liberty Bell.",
+      }),
+      mk(1003, "Survivor", "CBS", false, {
+        season: 48, number: 9, airtime: "20:00", genres: ["Reality"],
+        epName: "The Merge", rating: 7.8,
+        summary: "Castaways merge into one tribe ahead of the individual game.",
+      }),
+      mk(1004, "Grey's Anatomy", "ABC", false, {
+        season: 22, number: 14, airtime: "21:00", genres: ["Drama", "Medical"],
+        epName: "Hold On Tight", rating: 7.6,
+        summary: "Meredith faces a difficult case from her past.",
+      }),
+      mk(1005, "Law & Order: SVU", "NBC", false, {
+        season: 27, number: 11, airtime: "22:00", genres: ["Crime", "Drama"],
+        epName: "Smoke and Mirrors", rating: 8.0,
+        summary: "Benson investigates a high-profile case with personal stakes.",
+      }),
+    ],
+    web: [
+      mk(2001, "The Bear", "Hulu", true, {
+        season: 4, number: 1, airtime: "", genres: ["Drama", "Comedy"],
+        epName: "Tomorrow", rating: 8.7,
+        summary: "Carmy and the team open a new chapter at The Bear.",
+        weight: 99,
+      }),
+      mk(2002, "Severance", "Apple TV+", true, {
+        season: 3, number: 1, airtime: "", genres: ["Science-Fiction", "Thriller"],
+        epName: "Reintegration", rating: 8.9,
+        summary: "Mark returns to Lumon as the lines between his selves blur.",
+        weight: 99,
+      }),
+      mk(2003, "The Diplomat", "Netflix", true, {
+        season: 3, number: 5, airtime: "", genres: ["Drama", "Thriller"],
+        epName: "Talking Points", rating: 8.1,
+        summary: "Kate navigates a delicate negotiation with high political stakes.",
+      }),
+      mk(2004, "Slow Horses", "Apple TV+", true, {
+        season: 6, number: 2, airtime: "", genres: ["Drama", "Crime", "Thriller"],
+        epName: "Bad Apples", rating: 8.6,
+        summary: "Lamb sends his team into a trap they may not walk out of.",
+      }),
+      mk(2005, "Wednesday", "Netflix", true, {
+        season: 2, number: 1, airtime: "", genres: ["Comedy", "Horror", "Mystery"],
+        epName: "Wednesday's Child Is Full of Woe", rating: 8.3,
+        summary: "Wednesday Addams returns to Nevermore for another sinister term.",
+        weight: 98,
+      }),
+      mk(2006, "House of the Dragon", "HBO Max", true, {
+        season: 3, number: 1, airtime: "", genres: ["Drama", "Fantasy", "Adventure"],
+        epName: "The Black Queen", rating: 8.8,
+        summary: "The realm fractures as the Dance of the Dragons begins in earnest.",
+        weight: 99,
+      }),
+      mk(2007, "The Lincoln Lawyer", "Netflix", true, {
+        season: 4, number: 3, airtime: "", genres: ["Crime", "Drama", "Legal"],
+        epName: "Reasonable Doubt", rating: 7.9,
+        summary: "Mickey takes a case that puts him at odds with an old friend.",
+      }),
+    ]
+  };
+}
+
+
   const show = ep.show || {};
   const network = show.network?.name || show.webChannel?.name || "Unknown";
   const tz = show.network?.country?.timezone || show.webChannel?.country?.timezone || "";
@@ -1079,7 +1195,16 @@ async function fetchDate(dk) {
       .catch(() => null)
   );
 
-  const responses = await Promise.all(fetches);
+  let responses = await Promise.all(fetches);
+
+  // ── COLOR-SCHEME PREVIEW FALLBACK ──────────────────────────────────────
+  // If the API is unreachable (e.g. CORS when running on a non-allowlisted
+  // origin), inject mock data so the layout is visible for design review.
+  // Safe to delete this entire block once API CORS is configured.
+  if (responses.every(r => !r)) {
+    responses = [getMockScheduleData(dk)];
+  }
+  // ───────────────────────────────────────────────────────────────────────
   const seenWebEpisodes = new Set();
 
   responses.forEach(data => {
