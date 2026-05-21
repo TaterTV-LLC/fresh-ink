@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#F5F0E8">
+<title>Fresh Ink — Book Guide & Calendar</title>
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<link rel="preload" as="image" href="/logo.png" fetchpriority="high">
+<meta name="description" content="Find new episodes and premieres airing tonight. A TV guide, schedule, and calendar across every network and streaming service, all in one place.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://tatertv.app/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tatertv.app/">
+<meta property="og:title" content="Fresh Ink — Book Guide & Calendar">
+<meta property="og:description" content="Find new episodes and premieres airing tonight. A TV guide, schedule, and calendar across every network and streaming service, all in one place.">
+<meta property="og:site_name" content="Fresh Ink">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:url" content="https://tatertv.app/">
+<meta name="twitter:title" content="Fresh Ink — Book Guide & Calendar">
+<meta name="twitter:description" content="Find new episodes and premieres airing tonight. A TV guide, schedule, and calendar across every network and streaming service, all in one place.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600;700;800&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(74,59,40,0.1); border-radius: 3px; }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #F5F0E8;
+    color: #1C1208;
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* Ambient background */
+  .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .ambient-orb1 { position: absolute; top: -18%; left: -8%; width: 550px; height: 550px; background: radial-gradient(circle, rgba(45,90,39,0.04), transparent 70%); filter: blur(90px); }
+  .ambient-orb2 { position: absolute; bottom: -18%; right: -8%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(125,43,58,0.03), transparent 70%); filter: blur(90px); }
+  .ambient-scan { position: absolute; inset: 0; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(74,59,40,0.005) 2px, rgba(74,59,40,0.005) 4px); }
+
+  .container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 100px; }
+
+  /* ---- HERO / BRAND HEADER ---- */
+  .brand-header {
+    padding: 16px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand-left { display: flex; align-items: center; gap: 14px; }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #1C1208, #2D5A27);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .brand-tagline {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(45,90,39,0.5);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+  .brand-right {
+    display: flex; flex-direction: row; align-items: center; gap: 8px;
+  }
+  .header-nav-btn {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid rgba(74,59,40,0.14);
+    background: rgba(74,59,40,0.04);
+    color: rgba(74,59,40,0.7);
+    font-size: 11px; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px; text-decoration: none;
+    transition: all 0.2s ease; flex-shrink: 0;
+  }
+  .header-nav-btn:hover {
+    border-color: rgba(45,90,39,0.3);
+    background: rgba(45,90,39,0.06);
+    color: rgba(28,18,8,0.85);
+  }
+  .brand-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 600; color: rgba(74,59,40,0.3);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;
+  }
+
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #2D5A27; box-shadow: 0 0 10px rgba(45,90,39,0.5); animation: pulse 2s ease-in-out infinite; display: inline-block; }
+
+  /* Country picker */
+  .country-btn {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid rgba(74,59,40,0.14);
+    background: rgba(74,59,40,0.06);
+    color: rgba(74,59,40,0.55);
+    font-size: 11px; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; transition: all 0.2s ease;
+    letter-spacing: 0.5px; flex-shrink: 0;
+  }
+  .country-btn:active { transform: scale(0.96); }
+  .country-btn.active {
+    border-color: rgba(45,90,39,0.5);
+    background: rgba(45,90,39,0.1);
+    color: #2D5A27;
+  }
+  .tag-line { font-size: 11px; font-weight: 700; color: rgba(74,59,40,0.4); text-transform: uppercase; letter-spacing: 3px; font-family: 'JetBrains Mono', monospace; }
+  .subtitle { font-size: 12px; color: rgba(74,59,40,0.25); font-family: 'JetBrains Mono', monospace; }
+
+  /* Week ribbon pills */
+  .week-pill {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(74,59,40,0.12);
+    background: rgba(74,59,40,0.05); cursor: pointer; transition: all 0.25s ease;
+    min-width: 80px; position: relative;
+  }
+  .week-pill:active { transform: scale(0.96); }
+  .week-pill.current { background: rgba(45,90,39,0.08); border-color: rgba(45,90,39,0.25); }
+  .week-pill.selected { border-color: rgba(45,90,39,0.5); background: rgba(45,90,39,0.08); }
+  .week-pill .pill-label { font-size: 10px; font-weight: 700; color: rgba(74,59,40,0.5); text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
+  .week-pill.current .pill-label { color: #2D5A27; }
+  .week-pill.selected .pill-label { color: rgba(74,59,40,0.7); }
+  .week-pill .pill-num { font-size: 20px; font-weight: 700; color: rgba(74,59,40,0.7); font-family: 'DM Sans', sans-serif; }
+  .week-pill.selected .pill-num { color: #1C1208; }
+  .week-pill .pill-month { font-size: 9px; color: rgba(74,59,40,0.3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; }
+  .week-pill .pill-count { font-size: 9px; color: #2D5A27; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+  .talkshow-group { margin-top: 8px; }
+  .talkshow-toggle {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 12px;
+    border: 1px solid rgba(74,59,40,0.12);
+    background: rgba(74,59,40,0.05);
+    cursor: pointer; transition: all 0.2s ease;
+    user-select: none; -webkit-user-select: none;
+  }
+  .talkshow-toggle:active { transform: scale(0.98); }
+  .talkshow-toggle:hover { border-color: rgba(74,59,40,0.1); }
+  .talkshow-toggle-label {
+    font-size: 12px; font-weight: 600;
+    color: rgba(74,59,40,0.65);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px; flex: 1;
+  }
+  .talkshow-toggle-count {
+    font-size: 10px; color: rgba(74,59,40,0.4);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .talkshow-toggle-chevron {
+    font-size: 11px; color: rgba(74,59,40,0.45);
+    transition: transform 0.25s ease;
+  }
+  .talkshow-group.open .talkshow-toggle-chevron { transform: rotate(180deg); color: rgba(45,90,39,0.7); }
+  .talkshow-group.open .talkshow-toggle {
+    border-color: rgba(45,90,39,0.25);
+    background: rgba(45,90,39,0.06);
+  }
+  .talkshow-group.open .talkshow-toggle-label { color: rgba(28,18,8,0.85); }
+  .talkshow-group.open .talkshow-toggle-count { color: rgba(45,90,39,0.7); }
+  .talkshow-list { display: none; margin-top: 4px; }
+  .talkshow-group.open .talkshow-list { display: grid; gap: 6px; margin-top: 8px; }
+
+  /* Extra episodes collapsible */
+  .eps-open .eps-list { display: flex !important; max-height: 800px !important; }
+  .eps-open .eps-chevron { transform: rotate(180deg) !important; }
+
+  /* Date ribbon */
+  .date-ribbon { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 14px; scroll-behavior: smooth; }
+  .date-btn {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(74,59,40,0.12);
+    background: rgba(74,59,40,0.05); cursor: pointer; transition: all 0.25s ease;
+    min-width: 68px; position: relative;
+  }
+  .date-btn:active { transform: scale(0.96); }
+  .date-btn.today { background: rgba(45,90,39,0.08); border-color: rgba(45,90,39,0.25); }
+  .date-btn.selected { border-color: rgba(45,90,39,0.5); background: rgba(45,90,39,0.08); }
+  .date-btn .day-label { font-size: 10px; font-weight: 700; color: rgba(74,59,40,0.5); text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
+  .date-btn.today .day-label { color: #2D5A27; }
+  .date-btn.selected .day-label { color: rgba(74,59,40,0.7); }
+  .date-btn .day-num { font-size: 20px; font-weight: 700; color: rgba(74,59,40,0.7); font-family: 'DM Sans', sans-serif; }
+  .date-btn.selected .day-num { color: #1C1208; }
+  .date-btn .day-month { font-size: 9px; color: rgba(74,59,40,0.3); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; }
+  .date-btn .count { font-size: 9px; color: #2D5A27; font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+  .date-btn .loading-dot { width: 4px; height: 4px; border-radius: 50%; background: #2D5A27; animation: pulse 1s infinite; position: absolute; top: 6px; right: 6px; }
+
+
+
+  /* Date sections */
+  .date-section { margin-bottom: 36px; }
+  .date-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(245,240,232,0.92); backdrop-filter: blur(12px);
+    padding: 8px 0; margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;
+  }
+  .date-header h2 { font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif; color: rgba(74,59,40,0.65); white-space: nowrap; }
+  .date-header h2.today { color: #2D5A27; }
+  .date-header .line { flex: 1; height: 1px; background: rgba(74,59,40,0.06); }
+  .date-header .count { font-size: 11px; color: rgba(74,59,40,0.25); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+
+  /* Show cards */
+  .show-list { display: grid; grid-template-columns: 1fr; gap: 6px; }
+
+  .show-row {
+    border-radius: 12px; position: relative; overflow: hidden;
+    border: 1px solid rgba(74,59,40,0.08); cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none; -webkit-user-select: none;
+  }
+  .show-row:hover { border-color: rgba(74,59,40,0.16); }
+  .show-row .glow { position: absolute; top: 0; right: 0; width: 120px; height: 60px; pointer-events: none; }
+
+  .show-row .summary {
+    display: flex; align-items: center; gap: 10px; padding: 13px 14px;
+    position: relative; z-index: 1;
+  }
+  .show-row .summary img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; flex-shrink: 0; opacity: 0.9; transition: width 0.35s ease, height 0.35s ease, border-radius 0.35s ease; }
+  .show-row.expanded .summary img { width: 80px; height: 120px; border-radius: 10px; }
+  .show-row .summary .img-placeholder { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .show-row .summary .title { font-size: 16px; font-weight: 700; color: #1C1208; font-family: 'DM Sans', sans-serif; }
+  .show-row .summary .genre-pip { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.6px; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
+  .show-row .summary .network-sm { font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .show-row .summary .premiere-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; animation: pulse 2s infinite; }
+  .show-row .summary .chevron { font-size: 14px; color: rgba(74,59,40,0.35); transition: transform 0.25s ease, color 0.25s ease; flex-shrink: 0; }
+  .show-row.expanded .summary .chevron { transform: rotate(180deg); color: rgba(45,90,39,0.7); }
+
+  .show-row .details {
+    max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease;
+    padding: 0 14px;
+  }
+  .show-row.expanded .details { max-height: 1200px; padding: 0 14px 14px; }
+  .show-row .details-inner { display: flex; gap: 14px; }
+  .show-row .details-inner img { width: 56px; height: 80px; object-fit: cover; border-radius: 10px; flex-shrink: 0; opacity: 0.9; }
+  .show-row .details-inner .detail-info { flex: 1; min-width: 0; }
+  .show-row .meta { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .show-row .network { font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .show-row .time { color: rgba(74,59,40,0.3); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .show-row .season-badge { color: rgba(74,59,40,0.45); font-size: 11px; font-family: 'JetBrains Mono', monospace; background: rgba(74,59,40,0.05); padding: 2px 7px; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+  .show-row .type-label { font-size: 10px; color: rgba(74,59,40,0.25); font-family: 'JetBrains Mono', monospace; }
+  .show-row .ep-name { margin: 0 0 4px 0; color: rgba(74,59,40,0.55); font-size: 13px; font-style: italic; font-family: 'DM Sans', sans-serif; }
+  .show-row .desc { margin: 0 0 8px 0; color: rgba(74,59,40,0.4); font-size: 13px; line-height: 1.5; font-family: 'DM Sans', sans-serif; }
+
+  /* Collapsible summary sections */
+  .summary-section { margin-bottom: 8px; }
+  .summary-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; cursor: pointer; user-select: none; -webkit-user-select: none;
+    border-radius: 8px; border: 1px solid rgba(74,59,40,0.07);
+    background: rgba(74,59,40,0.03); transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .summary-toggle:active { background: rgba(74,59,40,0.06); }
+  .summary-toggle .toggle-icon {
+    width: 16px; height: 16px; border-radius: 4px;
+    background: rgba(74,59,40,0.06);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: rgba(74,59,40,0.4);
+    transition: all 0.2s ease; flex-shrink: 0;
+    border: 1px solid rgba(74,59,40,0.08);
+    transform: rotate(-90deg);
+  }
+  .summary-section.open .toggle-icon {
+    background: rgba(45,90,39,0.12);
+    color: rgba(45,90,39,0.8);
+    border-color: rgba(45,90,39,0.2);
+    transform: rotate(0deg);
+  }
+  .summary-toggle .toggle-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(74,59,40,0.6);
+    transition: color 0.2s ease; flex: 1;
+  }
+  .summary-section.open .toggle-label { color: rgba(45,90,39,0.7); }
+  .summary-section.open .summary-toggle {
+    border-color: rgba(45,90,39,0.15);
+    background: rgba(45,90,39,0.04);
+  }
+  .summary-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+  .summary-section.open .summary-body {
+    max-height: 600px; opacity: 1;
+  }
+  .show-row .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .show-row .genre-tag { font-size: 9px; font-weight: 600; padding: 3px 10px; border-radius: 6px; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.8px; }
+  .show-row .rating-tag { font-size: 9px; font-weight: 600; color: rgba(74,59,40,0.4); background: rgba(74,59,40,0.05); padding: 3px 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+  .show-row .premiere-badge { color: #F5F0E8; font-size: 8px; font-weight: 800; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; font-family: 'DM Sans', sans-serif; }
+  .filter-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(168,48,42,0.15); color: #a8302a; border: 1px solid rgba(168,48,42,0.35); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.4px; text-transform: uppercase; }
+  .show-row.is-filtered { opacity: 0.55; outline: 1px dashed rgba(168,48,42,0.35); }
+
+  /* Loading */
+  .loading-state { text-align: center; padding: 80px 20px; }
+  .loading-dots { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .loading-dots span { font-size: 22px; animation: roll 1s ease-in-out infinite; display: inline-block; }
+  .loading-dots span:nth-child(1) { animation-delay: 0s; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  .loading-text { color: rgba(74,59,40,0.4); font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+
+  .mini-loading { display: flex; gap: 8px; justify-content: center; padding: 40px 0; }
+  .mini-loading span { font-size: 14px; animation: roll 1s ease-in-out infinite; display: inline-block; }
+  .mini-loading span:nth-child(1) { animation-delay: 0s; }
+  .mini-loading span:nth-child(2) { animation-delay: 0.15s; }
+  .mini-loading span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes roll {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(180deg); }
+  }
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+  /* Week nav buttons */
+  .week-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    display: flex; gap: 8px; padding: 10px 16px;
+    background: rgba(245,240,232,0.94); backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(45,90,39,0.08);
+  }
+  .nav-btn {
+    padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(74,59,40,0.14);
+    background: rgba(74,59,40,0.06); color: rgba(74,59,40,0.65);
+    font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .nav-btn:hover { background: rgba(45,90,39,0.08); color: rgba(74,59,40,0.7); border-color: rgba(45,90,39,0.2); }
+  .nav-btn:active { transform: scale(0.97); }
+  .nav-btn.flex { flex: 1; }
+
+  /* Mode toggle */
+  .mode-toggle {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
+    background: rgba(74,59,40,0.04);
+    border: 1px solid rgba(74,59,40,0.12); border-radius: 12px; padding: 4px;
+  }
+  .mode-btn {
+    padding: 11px 8px; border-radius: 9px; border: none; background: transparent;
+    color: rgba(74,59,40,0.45); font-size: 11px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; cursor: pointer; transition: all 0.2s ease;
+    letter-spacing: 0.3px; white-space: nowrap; text-align: center;
+  }
+  .mode-btn:active { transform: scale(0.97); }
+  .mode-btn.active {
+    background: rgba(45,90,39,0.15); color: #2D5A27;
+    border: 1px solid rgba(45,90,39,0.25);
+  }
+  .mode-btn.full-width { grid-column: unset; }
+
+  /* Network filter */
+  .network-filter-wrap {
+    margin-bottom: 12px; position: relative;
+  }
+  .network-select {
+    width: 100%; padding: 10px 36px 10px 14px;
+    background: rgba(74,59,40,0.05);
+    border: 1px solid rgba(74,59,40,0.1);
+    border-radius: 11px;
+    color: rgba(74,59,40,0.6);
+    font-size: 12px; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; outline: none;
+    -webkit-appearance: none; appearance: none;
+    transition: all 0.2s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(74,59,40,0.25)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+  }
+  .network-select option { background: #EDE6D6; }
+  .network-select:focus { border-color: rgba(45,90,39,0.35); color: rgba(74,59,40,0.8); }
+  .network-select.active {
+    border-color: rgba(45,90,39,0.45);
+    background-color: rgba(45,90,39,0.07);
+    color: #2D5A27;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(45,90,39,0.7)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  }
+
+  /* Planner calendar grid */
+  .calendar-wrap { margin-bottom: 14px; max-width: 240px; margin-left: auto; margin-right: auto; }
+  .calendar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .calendar-month-label {
+    font-size: 13px; font-weight: 700; color: rgba(74,59,40,0.7);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .calendar-nav {
+    display: flex; gap: 6px;
+  }
+  .calendar-nav button {
+    background: rgba(74,59,40,0.04); border: 1px solid rgba(74,59,40,0.08);
+    color: rgba(74,59,40,0.4); width: 28px; height: 28px; border-radius: 8px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .calendar-nav button:active { transform: scale(0.94); }
+  .calendar-nav button:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+  .calendar-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 4px;
+  }
+  .calendar-weekdays span {
+    text-align: center; font-size: 9px; font-weight: 700;
+    color: rgba(74,59,40,0.2); font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; padding: 4px 0;
+  }
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+  }
+  .calendar-day {
+    aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s ease;
+    position: relative; gap: 2px;
+  }
+  .calendar-day:active { transform: scale(0.93); }
+  .calendar-day.empty { cursor: default; }
+  .calendar-day.today { border-color: rgba(45,90,39,0.3); background: rgba(45,90,39,0.06); }
+  .calendar-day.selected { border-color: rgba(45,90,39,0.6); background: rgba(45,90,39,0.12); }
+  .calendar-day.past:not(.selected):not(.today) { opacity: 0.45; }
+  .calendar-day .pday-num {
+    font-size: 13px; font-weight: 600; color: rgba(74,59,40,0.6);
+    font-family: 'DM Sans', sans-serif; line-height: 1;
+  }
+  .calendar-day.today .pday-num { color: #2D5A27; }
+  .calendar-day.selected .pday-num { color: #1C1208; }
+  .calendar-day .pday-dots {
+    display: flex; gap: 2px; align-items: center; justify-content: center;
+    min-height: 5px;
+  }
+  .calendar-day .pdot {
+    width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0;
+  }
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: rgba(28,18,8,0.96); border: 1px solid rgba(45,90,39,0.3);
+    color: rgba(245,240,232,0.85); font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    padding: 9px 16px; border-radius: 20px; white-space: nowrap;
+    backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(74,59,40,0.4);
+    opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none; z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .brand-name { font-size: 24px; }
+    .brand-logo-img { width: 46px; height: 46px; }
+    .brand-tagline { font-size: 9px; letter-spacing: 2px; }
+    .container { padding: 0 16px 100px; }
+    .date-header { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+  }
+
+  /* Footer back-to-top pill */
+  
+  
+  .footer-back-top:active { transform: scale(0.97); }
+
+  /* Floating scroll-to-top button */
+  .scroll-top-btn {
+    position: fixed;
+    top: 50%;
+    right: 16px;
+    margin-top: -21px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(28, 18, 8, 0.85);
+    border: 1px solid rgba(45, 90, 39, 0.35);
+    color: rgba(28, 18, 8, 0.9);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 9998;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(74,59,40,0.4), 0 0 24px rgba(45,90,39,0.08);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease, background 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .scroll-top-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  .scroll-top-btn:hover,
+  .scroll-top-btn:active {
+    background: rgba(28, 18, 8, 0.95);
+    border-color: rgba(45, 90, 39, 0.6);
+    color: #F5F0E8;
+  }
+  .scroll-top-btn:active { transform: translateX(0) scale(0.94); }
+
+  .brand-logo-img {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    object-fit: contain;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform 0.2s ease, opacity 0.25s ease;
+    flex-shrink: 0;
+    opacity: 0;
+    background: #F5F0E8;
+    border-radius: 8px;
+  }
+  .brand-logo-img.loaded {
+    opacity: 1;
+  }
+  .brand-logo-img:active {
+    transform: scale(0.92);
+  }
+  /* Hide brand name until logo image has loaded — eliminates FOUC */
+  .brand-name {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .brand-name.loaded {
+    opacity: 1;
+  }
+
+  /* ---- Unified footer ---- */
+  .footer {
+    margin-top: 64px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(74,59,40,0.06);
+    text-align: center;
+  }
+  .footer p {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(74,59,40,0.4);
+    margin: 0;
+  }
+  .footer a {
+    color: rgba(45,90,39,0.7);
+    text-decoration: none;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    transition: color 0.2s;
+  }
+  .footer a:hover { color: #2D5A27; }
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+  .footer-nav a {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(74,59,40,0.1);
+    background: rgba(74,59,40,0.04);
+    color: rgba(74,59,40,0.5);
+    transition: all 0.2s ease;
+  }
+  .footer-nav a:hover {
+    border-color: rgba(45,90,39,0.3);
+    background: rgba(45,90,39,0.06);
+    color: rgba(28,18,8,0.85);
+  }
+  .footer-nav-primary { margin-bottom: 18px; }
+  .footer-nav-primary a {
+    padding: 6px 14px;
+    color: rgba(74,59,40,0.7);
+    border-color: rgba(74,59,40,0.14);
+  }
+  .footer-disclaimer {
+    margin-bottom: 18px !important;
+    color: rgba(74,59,40,0.45) !important;
+    line-height: 1.6;
+  }
+  .footer-nav-legal { margin-bottom: 16px; }
+  .footer-nav-legal a {
+    padding: 4px 11px;
+    font-size: 10px !important;
+    color: rgba(74,59,40,0.35);
+    border-color: rgba(74,59,40,0.08);
+    background: transparent;
+  }
+  .footer-attribution {
+    margin-bottom: 22px !important;
+    color: rgba(74,59,40,0.3) !important;
+  }
+  .footer-attribution a {
+    color: rgba(45,90,39,0.55);
+    border-bottom: 1px solid rgba(45,90,39,0.2);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .footer-attribution a:hover {
+    color: #2D5A27;
+    border-bottom-color: #2D5A27;
+  }
+  .footer-back-top-row { margin-top: 0 !important; }
+  .footer-back-top {
+    display: inline-block;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(45,90,39,0.3);
+    background: rgba(45,90,39,0.06);
+    color: rgba(28,18,8,0.8) !important;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-decoration: none !important;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+  .footer-back-top:hover {
+    border-color: rgba(45,90,39,0.5);
+    background: rgba(45,90,39,0.12);
+    color: #1C1208 !important;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="ambient-orb1"></div>
+  <div class="ambient-orb2"></div>
+  <div class="ambient-scan"></div>
+</div>
+
+<div class="container" id="top">
+
+  <!-- Brand Header -->
+  <div class="brand-header">
+    <div class="brand-left">
+      <img src="/logo.png" alt="Fresh Ink" class="brand-logo-img" id="brandLogo" onclick="handleLogTap()" onload="this.classList.add('loaded'); document.querySelector('.brand-name').classList.add('loaded');">
+      <div class="brand-name">Fresh Ink</div>
+    </div>
+    <script>
+      // Fallback: ensure brand-name appears even if logo fails to load
+      (function() {
+        const img = document.getElementById('brandLogo');
+        const name = document.querySelector('.brand-name');
+        if (!img || !name) return;
+        // If image already cached, mark loaded immediately
+        if (img.complete && img.naturalWidth > 0) {
+          img.classList.add('loaded');
+          name.classList.add('loaded');
+          return;
+        }
+        // Handle load error
+        img.addEventListener('error', () => {
+          name.classList.add('loaded');
+        });
+        // Failsafe: never let text stay invisible more than 2s
+        setTimeout(() => {
+          name.classList.add('loaded');
+          if (img.complete) img.classList.add('loaded');
+        }, 2000);
+      })();
+    </script>
+    <div class="brand-right">
+      <a href="/blog/" class="header-nav-btn">Blog</a>
+      <a href="/about.html" class="header-nav-btn">About</a>
+    </div>
+  </div>
+
+  <div class="date-ribbon" id="dateRibbon"></div>
+  <div id="premieresRibbon" class="date-ribbon" style="display:none"></div>
+  <div id="calendarWrap" class="calendar-wrap" style="display:none"></div>
+
+  <div class="mode-toggle" style="margin-bottom:12px">
+    <button class="mode-btn active" id="btnGuide" onclick="setMode('guide')">Guide</button>
+    <button class="mode-btn" id="btnCalendar" onclick="setMode('calendar')">Calendar</button>
+    <button class="mode-btn full-width" id="btnPremieres" onclick="setMode('premieres')">Premieres</button>
+  </div>
+
+  <div class="network-filter-wrap" id="networkFilterWrap" style="display:none">
+    <select class="network-select" id="networkSelect" onchange="setNetworkFilter(this.value)">
+      <option value="All">All Networks</option>
+    </select>
+  </div>
+
+  <div id="countryBar" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:nowrap"></div>
+  <div id="content"></div>
+
+  <div class="footer">
+    <div class="footer-nav footer-nav-primary">
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="/about.html">About</a>
+    </div>
+    <p class="footer-disclaimer">Fresh Ink may earn commissions from links on this site. <a href="/disclosure.html">Learn more</a></p>
+    <div class="footer-nav footer-nav-legal">
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/disclosure.html">Affiliate Disclosure</a>
+    </div>
+    <p class="footer-attribution">© Fresh Ink LLC · Data via <a href="https://www.tvmaze.com" target="_blank" rel="noopener">TVMaze</a></p>
+    <p class="footer-back-top-row"><a href="#" class="footer-back-top" onclick="event.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});">↑ Back to top</a></p>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="weekBtns" class="week-nav">
+  <button class="nav-btn flex" onclick="navPrev()">← Prev</button>
+  <button class="nav-btn flex" onclick="selectSingleDate(0)">Today</button>
+  <button class="nav-btn flex" onclick="navNext()">Next →</button>
+</div>
+
+<div id="premieresNav" class="week-nav" style="display:none">
+  <button class="nav-btn flex" onclick="navPremiereWeek(-1)">← Prev</button>
+  <button class="nav-btn flex" onclick="navPremiereWeek(0)">This Week</button>
+  <button class="nav-btn flex" onclick="navPremiereWeek(1)">Next →</button>
+</div>
+
+<button id="scrollTopBtn" class="scroll-top-btn" aria-label="Back to top" title="Back to top">↑</button>
+
+<script>
+const TATERTV_API = "https://api.tatertv.app";
+
+function htmlEsc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const state = {
+  selectedDates: new Set(),
+  showsByDate: {},
+  loadingDates: new Set(),
+  fetchedDates: new Set(),
+  networkFilter: "All",
+  countries: new Set(["US"]),
+  mode: "guide",
+  calendarMonth: new Date(),
+  premieresWeekOffset: 0,
+  debugMode: false,
+};
+
+const NETWORK_TO_STREAMING = {
+  // Disney/Hulu
+  "abc": "Hulu", "fox": "Hulu", "fx": "Hulu", "fxx": "Hulu",
+  "freeform": "Hulu", "fx on hulu": "Hulu",
+  "nat geo": "Disney+", "national geographic": "Disney+",
+  // Peacock
+  "nbc": "Peacock", "usa network": "Peacock", "bravo": "Peacock",
+  "e!": "Peacock", "oxygen": "Peacock", "syfy": "Peacock", "msnbc": "Peacock",
+  // Paramount+
+  "cbs": "Paramount+", "mtv": "Paramount+", "comedy central": "Paramount+",
+  "bet": "Paramount+", "vh1": "Paramount+", "nickelodeon": "Paramount+",
+  "nick jr": "Paramount+", "paramount network": "Paramount+",
+  "showtime": "Paramount+",
+  // HBO Max (Warner/Discovery)
+  "hbo": "HBO Max", "tnt": "HBO Max", "tbs": "HBO Max", "tcm": "HBO Max",
+  "tlc": "HBO Max", "hgtv": "HBO Max", "food network": "HBO Max", "discovery": "HBO Max",
+  "animal planet": "HBO Max", "investigation discovery": "HBO Max", "id ": "HBO Max",
+  "travel channel": "HBO Max", "magnolia": "HBO Max", "cnn": "HBO Max",
+  "cartoon network": "HBO Max", "adult swim": "HBO Max", "trutv": "HBO Max",
+  "truTV": "HBO Max", "own": "HBO Max", "science channel": "HBO Max",
+  "boomerang": "HBO Max", "max ": "HBO Max",
+  // CW
+  "cw": "The Roku Channel",
+  // AMC+
+  "amc": "AMC+", "bbc america": "AMC+", "sundance tv": "AMC+", "ifc": "AMC+",
+};
+
+function getStreamingHome(network) {
+  const n = (network || "").toLowerCase();
+  for (const [k, v] of Object.entries(NETWORK_TO_STREAMING)) {
+    if (n.includes(k)) return v;
+  }
+  return null;
+}
+
+// === Amazon Associates affiliate links ===
+// Tag is appended to all generated URLs. Required for commission tracking.
+const AMAZON_AFFILIATE_TAG = "tatertv-20";
+
+// Streaming-home name → full SiteStripe affiliate URL (Amazon Associates).
+// These are the official SiteStripe-generated links — the attribution-blessed
+// format. Do NOT hand-edit the query params; regenerate from SiteStripe if a
+// channel changes. The tag (tatertv-20) is already baked into each URL.
+//
+// Keys MUST match either:
+//   (a) a streaming-home value produced by NETWORK_TO_STREAMING
+//       (currently: AMC+, HBO Max, Paramount+, Peacock have Prime channels;
+//        Disney+, Hulu, The Roku Channel do not → no button), OR
+//   (b) a native streamer/webChannel name as it appears in show.network
+//       (Starz, BritBox, MGM+, Apple TV+, Acorn TV, Hallmark+, ALLBLK).
+//
+// MAINTENANCE: keep this in sync with the affiliate rules in the blog-post
+// generation prompt. Both must use these same URLs.
+const PRIME_CHANNELS = {
+  "HBO Max":    "https://www.amazon.com/gp/video/channel/05b8c408-6a8a-468a-a896-ef7432a1ce31?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=0e6984fe0bcc19d79c17e19a43098ad2&language=en_US&ref_=as_li_ss_tl",
+  "Paramount+": "https://www.amazon.com/gp/video/channel/1a29015f-71e4-49a9-bb12-265d00ecf1ae?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=4971c9bff85c9deb09f5866dde09319f&language=en_US&ref_=as_li_ss_tl",
+  "Peacock":    "https://www.amazon.com/gp/video/channel/b3f37c55-59d4-46fc-872a-cbcc430b45b4?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=91cfa0367ad00d7ba0ce8dfda9f597db&language=en_US&ref_=as_li_ss_tl",
+  "AMC+":       "https://www.amazon.com/gp/video/storefront/subscription/amcplus?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=da1f3aab642f4527e548852fd7041570&language=en_US&ref_=as_li_ss_tl",
+  "Apple TV+":  "https://www.amazon.com/gp/video/channel/9656551b-be9b-4ba2-b80b-7c7266eb6616?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=887e86f68ec78e2df820a065d86995f7&language=en_US&ref_=as_li_ss_tl",
+  "Starz":      "https://www.amazon.com/gp/video/channel/06a41896-bcb5-42fd-bd69-267136237152?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=d265fb14d131d69f78c978176bad024f&language=en_US&ref_=as_li_ss_tl",
+  "BritBox":    "https://www.amazon.com/gp/video/storefront/subscription/britbox?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=8103e899d3e892fecff7f415233f0567&language=en_US&ref_=as_li_ss_tl",
+  "MGM+":       "https://www.amazon.com/gp/video/storefront/subscription/epix?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=318c63b5eb93e1d541c93f3262193696&language=en_US&ref_=as_li_ss_tl",
+  "Acorn TV":   "https://www.amazon.com/gp/video/storefront/subscription/acorn?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=358c56a2f1d769a56796f457b962b5ce&language=en_US&ref_=as_li_ss_tl",
+  "Hallmark+":  "https://www.amazon.com/gp/video/storefront/subscription/hallmark?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=db35fc89ef14dff04a41dc76bcc5130b&language=en_US&ref_=as_li_ss_tl",
+  "ALLBLK":     "https://www.amazon.com/gp/video/storefront/subscription/umc?jic=20%7CEgxzdWJzY3JpcHRpb24%3D&linkCode=ll2&tag=tatertv-20&linkId=94f41da2d03b303f9b16819f11bb5755&language=en_US&ref_=as_li_ss_tl",
+};
+
+// Returns the SiteStripe URL for a streaming home, or null if no Prime channel.
+function primeChannelUrl(streamer) {
+  return PRIME_CHANNELS[streamer] || null;
+}
+
+// Append our affiliate tag to an existing Amazon/Prime Video URL.
+// Strips any existing tag= param to avoid double-tagging.
+function appendAffiliateTag(url) {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete("tag");
+    u.searchParams.set("tag", AMAZON_AFFILIATE_TAG);
+    return u.toString();
+  } catch {
+    return url + (url.includes("?") ? "&" : "?") + `tag=${AMAZON_AFFILIATE_TAG}`;
+  }
+}
+
+// Returns { url, label } for an affiliate-earning Watch button, or null
+// if this show's network isn't monetizable (Netflix, Disney+, etc.).
+function buildWatchUrl(show) {
+  const netLower = (show.network || "").toLowerCase();
+
+  // Native Prime Video — prefer a direct Amazon/PV deep link if TVMaze gave us one,
+  // otherwise fall back to Prime Video search by title.
+  if (netLower.includes("prime video") || netLower.includes("amazon")) {
+    const site = show.officialSite || "";
+    if (site && (site.includes("amazon.com") || site.includes("primevideo.com"))) {
+      return { url: appendAffiliateTag(site), label: "Watch on Prime Video" };
+    }
+    const q = encodeURIComponent(show.title || "");
+    return {
+      url: `https://www.amazon.com/gp/video/search?phrase=${q}&tag=${AMAZON_AFFILIATE_TAG}`,
+      label: "Watch on Prime Video"
+    };
+  }
+
+  // Resolve effective streaming home:
+  //  1. native streamer/webChannel name match (Starz, BritBox, Apple TV+, etc.)
+  //  2. else map cable network → streaming home (HBO → HBO Max, NBC → Peacock)
+  //
+  // Matching is normalized (strip +, "plus", spaces, punctuation, lowercase) so
+  // TVMaze variants all resolve: "Apple TV" / "Apple TV+" / "Apple TV Plus" →
+  // the "Apple TV+" key; "AMC+" / "AMC +" → "AMC+"; etc. Apple renamed
+  // "Apple TV+" to "Apple TV" in 2025 so TVMaze records contain BOTH forms.
+  const normalize = s => (s || "").toLowerCase()
+    .replace(/\bplus\b/g, "")      // "apple tv plus" → "apple tv "
+    .replace(/[+\s._-]/g, "");     // strip +, spaces, ._- → "appletv"
+  const netNorm = normalize(show.network);
+
+  let streamer = null;
+  for (const channel of Object.keys(PRIME_CHANNELS)) {
+    const chNorm = normalize(channel);
+    // Require the normalized network to START with the normalized channel key
+    // (not just include) so short keys can't false-match unrelated networks.
+    if (netNorm === chNorm || netNorm.startsWith(chNorm)) { streamer = channel; break; }
+  }
+  if (!streamer) streamer = getStreamingHome(show.network);
+
+  const channelUrl = streamer ? primeChannelUrl(streamer) : null;
+  if (channelUrl) {
+    return { url: channelUrl, label: "Watch on Prime Video" };
+  }
+
+  // Not monetizable: Netflix, Disney+, Hulu, The Roku Channel, or any
+  // network that doesn't resolve to a Prime channel → no button.
+  return null;
+}
+
+const genreColors = {
+  Drama: { accent: "#a8302a", glow: "rgba(168,48,42,0.3)" },
+  Comedy: { accent: "#1e7a3d", glow: "rgba(30,122,61,0.3)" },
+  Thriller: { accent: "#6b3e8f", glow: "rgba(107,62,143,0.3)" },
+  "Science-Fiction": { accent: "#0a6b8f", glow: "rgba(10,107,143,0.3)" },
+  Horror: { accent: "#a8302a", glow: "rgba(168,48,42,0.4)" },
+  Action: { accent: "#8a5a0a", glow: "rgba(138,90,10,0.3)" },
+  Romance: { accent: "#a8336e", glow: "rgba(168,51,110,0.3)" },
+  Crime: { accent: "#5e54b8", glow: "rgba(94,84,184,0.3)" },
+  Fantasy: { accent: "#2e6d9f", glow: "rgba(46,109,159,0.3)" },
+  Anime: { accent: "#a8336e", glow: "rgba(168,51,110,0.3)" },
+  Adventure: { accent: "#8a4a18", glow: "rgba(125,43,58,0.3)" },
+  Mystery: { accent: "#4a3b6e", glow: "rgba(74,59,110,0.25)" },
+  Supernatural: { accent: "#5e54b8", glow: "rgba(94,84,184,0.3)" },
+  Family: { accent: "#9a7a00", glow: "rgba(154,122,0,0.3)" },
+  Medical: { accent: "#0a6b4d", glow: "rgba(10,107,77,0.3)" },
+  Legal: { accent: "#4A3B28", glow: "rgba(74,59,40,0.2)" },
+  Sports: { accent: "#0a6b6b", glow: "rgba(10,107,107,0.3)" },
+  Music: { accent: "#b8456e", glow: "rgba(184,69,110,0.3)" },
+  History: { accent: "#7D2B3A", glow: "rgba(74,59,40,0.3)" },
+};
+const defaultColor = { accent: "#2D5A27", glow: "rgba(45,90,39,0.18)" };
+
+function getGenreStyle(genre) {
+  if (!genre) return defaultColor;
+  const key = Object.keys(genreColors).find(k => genre.toLowerCase().includes(k.toLowerCase()));
+  return genreColors[key] || defaultColor;
+}
+
+// Date helpers
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function fmtDate(d) { return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }); }
+function todayKey() { return dateKey(new Date()); }
+function yesterdayKey() { const y = new Date(); y.setDate(y.getDate()-1); return dateKey(y); }
+function isToday(dk) { return dk === todayKey(); }
+function isYesterday(dk) { return dk === yesterdayKey(); }
+function tomorrowKey() { const t = new Date(); t.setDate(t.getDate()+1); return dateKey(t); }
+function isTomorrow(dk) { return dk === tomorrowKey(); }
+function isPast(dk) { return dk < todayKey(); }
+function fmt12h(t) {
+  if (!t || t === "Streaming" || t === "TBA") return t;
+  const [h, m] = t.split(":").map(Number);
+  if (isNaN(h)) return t;
+  const period = h >= 12 ? "PM" : "AM";
+  const hour = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour}:${String(m).padStart(2,"0")} ${period}`;
+}
+
+function getDates() {
+  const dates = [];
+  const today = new Date();
+  for (let i = -7; i <= 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    dates.push(d);
+  }
+  return dates;
+}
+
+const allDates = getDates();
+
+// Parse episodes
+// Filtering is handled server-side by the Worker. Debug mode passes ?debug=true
+// to the API which returns all items with _filtered and _filterReason flags.
+
+const TZ_LABELS = {
+  "America/New_York": "ET", "America/Chicago": "CT", "America/Denver": "MT",
+  "America/Los_Angeles": "PT", "America/Toronto": "ET", "America/Vancouver": "PT",
+  "Europe/London": "GMT", "Europe/Dublin": "GMT", "Australia/Sydney": "AEST",
+  "Pacific/Auckland": "NZST",
+};
+function tzLabel(tz) { return TZ_LABELS[tz] || ""; }
+
+function parseBroadcast(ep) {
+  const show = ep.show || {};
+  const network = show.network?.name || show.webChannel?.name || "Unknown";
+  const tz = show.network?.country?.timezone || show.webChannel?.country?.timezone || "";
+  const isSeriesPremiere = ep.season === 1 && ep.number === 1;
+  const isSeasonPremiere = ep.season > 1 && ep.number === 1;
+  const isPremiere = isSeriesPremiere || isSeasonPremiere;
+  let seasonStr = "";
+  if (isSeriesPremiere) seasonStr = "Series Premiere";
+  else if (isSeasonPremiere) seasonStr = `Season ${ep.season} Premiere`;
+  else if (ep.season && ep.number) seasonStr = `S${String(ep.season).padStart(2,"0")} E${String(ep.number).padStart(2,"0")}`;
+  return {
+    id: `b-${ep.id}`, title: show.name || ep.name || "Unknown",
+    episodeName: ep.name || "", network,
+    webChannel: show.webChannel?.name || null,
+    time: ep.airtime || "TBA", tz: tzLabel(tz), season: seasonStr,
+    seasonNum: ep.season || null, epNum: ep.number || null,
+    genre: show.genres?.[0] || "Other",
+    showDescription: (show.summary || "").replace(/<[^>]*>/g, "").trim().slice(0, 500),
+    epDescription: (ep.summary || "").replace(/<[^>]*>/g, "").trim().slice(0, 300),
+    isSeason1: ep.season === 1, isSeriesPremiere, isSeasonPremiere, isPremiere,
+    rating: show.rating?.average ? `${show.rating.average}/10` : null,
+    image: show.image?.medium || null, showType: show.type || "", weight: show.weight || 0,
+    _excludeReason: ep._filterReason || null,
+    imdbId: show.externals?.imdb || null,
+    officialSite: show.officialSite || null,
+  };
+}
+
+function parseWeb(ep) {
+  const show = ep._embedded?.show || {};
+  const network = ep.webChannel?.name || show.webChannel?.name || "Streaming";
+  const tz = ep.webChannel?.country?.timezone || show.webChannel?.country?.timezone || show.network?.country?.timezone || "";
+  const isSeriesPremiere = ep.season === 1 && ep.number === 1;
+  const isSeasonPremiere = ep.season > 1 && ep.number === 1;
+  const isPremiere = isSeriesPremiere || isSeasonPremiere;
+  let seasonStr = "";
+  if (isSeriesPremiere) seasonStr = "Series Premiere";
+  else if (isSeasonPremiere) seasonStr = `Season ${ep.season} Premiere`;
+  else if (ep.season && ep.number) seasonStr = `S${String(ep.season).padStart(2,"0")} E${String(ep.number).padStart(2,"0")}`;
+  return {
+    id: `w-${ep.id}`, title: show.name || ep.name || "Unknown",
+    episodeName: ep.name || "", network,
+    time: ep.airtime || "Streaming", tz: tzLabel(tz), season: seasonStr,
+    seasonNum: ep.season || null, epNum: ep.number || null,
+    genre: show.genres?.[0] || "Other",
+    showDescription: (show.summary || "").replace(/<[^>]*>/g, "").trim().slice(0, 500),
+    epDescription: (ep.summary || "").replace(/<[^>]*>/g, "").trim().slice(0, 300),
+    isSeason1: ep.season === 1, isSeriesPremiere, isSeasonPremiere, isPremiere,
+    rating: show.rating?.average ? `${show.rating.average}/10` : null,
+    image: show.image?.medium || null, showType: show.type || "", weight: show.weight || 0,
+    _excludeReason: ep._filterReason || null,
+    imdbId: show.externals?.imdb || null,
+    officialSite: show.officialSite || null,
+  };
+}
+
+// Fetch
+async function fetchDate(dk) {
+  if (state.fetchedDates.has(dk)) return;
+  state.fetchedDates.add(dk);
+  state.loadingDates.add(dk);
+
+  // Only show loader if fetch takes more than 150ms and there's nothing to show yet
+  const loaderTimer = setTimeout(() => {
+    if (state.loadingDates.has(dk) && !state.showsByDate[dk]) render();
+  }, 150);
+
+  const results = [];
+
+  // Fetch from our Worker API for each selected country
+  const fetches = [...state.countries].map(cc =>
+    fetch(`${TATERTV_API}/schedule?date=${dk}&country=${cc}${state.debugMode ? '&debug=true' : ''}`)
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null)
+  );
+
+  const responses = await Promise.all(fetches);
+  const seenWebEpisodes = new Set();
+
+  responses.forEach(data => {
+    if (!data) return;
+
+    // Process broadcast episodes — Worker handles all filtering server-side
+    if (Array.isArray(data.broadcast)) {
+      data.broadcast.forEach(ep => {
+        const s = parseBroadcast(ep);
+        if (s) results.push(s);
+      });
+    }
+
+    // Process web/streaming episodes — Worker handles all filtering server-side
+    if (Array.isArray(data.web)) {
+      data.web.forEach(ep => {
+        if (seenWebEpisodes.has(ep.id)) return;
+        seenWebEpisodes.add(ep.id);
+        const s = parseWeb(ep);
+        if (s) results.push(s);
+      });
+    }
+  });
+
+  // Dedupe exact same episode from multiple sources
+  const seen = new Set();
+  const deduped = results.filter(s => {
+    const k = `${s.title}-${s.season}-${s.episodeName}`;
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  });
+
+  // Group by title for multi-episode cards
+  const grouped = {};
+  deduped.forEach(s => {
+    if (!grouped[s.title]) {
+      grouped[s.title] = { ...s, extraEpisodes: [] };
+    } else {
+      grouped[s.title].extraEpisodes.push(s);
+      // Bubble up premiere if extra ep is a premiere and primary isn't
+      if (s.isPremiere && !grouped[s.title].isPremiere) {
+        grouped[s.title].isPremiere = true;
+        grouped[s.title].isSeriesPremiere = s.isSeriesPremiere;
+        grouped[s.title].isSeasonPremiere = s.isSeasonPremiere;
+        grouped[s.title].season = s.season;
+      }
+    }
+  });
+  const grouped_shows = Object.values(grouped);
+
+  // Smart sort
+  grouped_shows.forEach(s => {
+    let score = 0;
+    if (s.isSeriesPremiere) score += 10000;
+    else if (s.isSeasonPremiere) score += 5000;
+    score += (s.weight || 0) * 3;
+    s._score = score;
+  });
+  grouped_shows.sort((a, b) => {
+    if (b._score !== a._score) return b._score - a._score;
+    const at = t => (!t || t === "TBA" || t === "Streaming") ? "99:99" : t;
+    return at(a.time).localeCompare(at(b.time));
+  });
+
+  clearTimeout(loaderTimer);
+  state.showsByDate[dk] = grouped_shows;
+  state.loadingDates.delete(dk);
+  if (state.mode === "premieres") renderPremieresRibbon();
+  render();
+}
+
+function toggleDate(dk) {
+  // Single select — just switch to tapped date
+  if (state.selectedDates.has(dk) && state.selectedDates.size === 1) return; // already the only one
+  state.selectedDates.clear();
+  state.selectedDates.add(dk);
+  fetchDate(dk);
+  render();
+  setTimeout(() => {
+    const ribbon = document.getElementById("dateRibbon");
+    const btn = ribbon?.querySelector(`[onclick="toggleDate('${dk}')"]`);
+    if (btn && ribbon) {
+      const left = btn.offsetLeft - ribbon.offsetWidth / 2 + btn.offsetWidth / 2;
+      ribbon.scrollTo({ left, behavior: "smooth" });
+    }
+  }, 50);
+  // Silently prefetch adjacent days
+  const d = new Date(dk + "T12:00:00");
+  const prev = new Date(d); prev.setDate(d.getDate() - 1);
+  const next = new Date(d); next.setDate(d.getDate() + 1);
+  fetchDate(dateKey(prev));
+  fetchDate(dateKey(next));
+}
+
+function selectDateRange(startOffset, endOffset) {
+  const today = new Date();
+  state.selectedDates.clear();
+  for (let i = startOffset; i <= endOffset; i++) {
+    const d = new Date(today); d.setDate(today.getDate() + i);
+    const dk = dateKey(d);
+    if (allDates.some(ad => dateKey(ad) === dk)) {
+      state.selectedDates.add(dk); fetchDate(dk);
+    }
+  }
+  render();
+}
+
+function selectSingleDate(offset) {
+  const d = new Date(); d.setDate(d.getDate() + offset);
+  state.selectedDates.clear();
+  const dk = dateKey(d);
+  state.selectedDates.add(dk); fetchDate(dk);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  // Scroll date ribbon to keep selected date in view
+  setTimeout(() => {
+    const ribbon = document.getElementById("dateRibbon");
+    const btn = ribbon?.querySelector(`[onclick="toggleDate('${dk}')"]`);
+    if (btn && ribbon) {
+      const left = btn.offsetLeft - ribbon.offsetWidth / 2 + btn.offsetWidth / 2;
+      ribbon.scrollTo({ left, behavior: "smooth" });
+    }
+  }, 50);
+  // Silently prefetch adjacent days
+  const prev = new Date(); prev.setDate(prev.getDate() + offset - 1);
+  const next = new Date(); next.setDate(next.getDate() + offset + 1);
+  fetchDate(dateKey(prev));
+  fetchDate(dateKey(next));
+}
+
+function toggleCard(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle("expanded");
+}
+
+function toggleTalkShows(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle("open");
+}
+
+function toggleSummary(ev, id) {
+  ev.stopPropagation();
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle("open");
+}
+
+function showCardHTML(show, index) {
+  const gs = getGenreStyle(show.genre);
+  const delay = Math.min(index, 20) * 25;
+  const cardId = `card-${show.id.replace(/[^a-zA-Z0-9-]/g, "")}`;
+
+  const thumbHTML = show.image
+    ? `<img class="lazy-img" data-src="${htmlEsc(show.image)}" alt="" style="opacity:0;transition:opacity 0.3s ease">`
+    : `<div class="img-placeholder" style="background:${gs.accent}15;color:${gs.accent}">▸</div>`;
+  const premiereDot = "";
+
+  // When a show airs multiple episodes in one block, prefer a range label
+  // (e.g. "S01 E01–E04"). Falls back to "+N EPS" when episode numbers are
+  // missing or non-consecutive.
+  const extras = show.extraEpisodes || [];
+  const extraCount = extras.length;
+  let rangeLabel = "";
+  let extraBadge = "";
+  if (extraCount > 0) {
+    const allNums = [show.epNum, ...extras.map(e => e.epNum)].filter(n => typeof n === "number");
+    const sameSeason = extras.every(e => e.seasonNum === show.seasonNum);
+    const canRange = allNums.length === extraCount + 1 && sameSeason && show.seasonNum;
+    if (canRange && !show.isSeriesPremiere && !show.isSeasonPremiere) {
+      const sorted = [...allNums].sort((a, b) => a - b);
+      const consecutive = sorted.every((n, i) => i === 0 || n === sorted[i - 1] + 1);
+      if (consecutive) {
+        const sStr = `S${String(show.seasonNum).padStart(2, "0")}`;
+        const lo = String(sorted[0]).padStart(2, "0");
+        const hi = String(sorted[sorted.length - 1]).padStart(2, "0");
+        rangeLabel = `${sStr} E${lo}–E${hi}`;
+      }
+    }
+    if (!rangeLabel) {
+      extraBadge = `<span class="season-badge" style="font-size:9px;background:rgba(45,90,39,0.15);color:#2D5A27;border:1px solid rgba(45,90,39,0.3)">+${extraCount} EPS</span>`;
+    }
+  }
+
+  const seasonText = rangeLabel || show.season;
+  let seasonSmall = "";
+  if (show.isSeriesPremiere) {
+    seasonSmall = `<span class="season-badge" style="font-size:9px;background:rgba(30,122,61,0.15);color:#1e7a3d;border:1px solid rgba(30,122,61,0.3)">${htmlEsc(seasonText)}</span>`;
+  } else if (show.isSeasonPremiere) {
+    seasonSmall = `<span class="season-badge" style="font-size:9px;background:rgba(154,122,0,0.15);color:#9a7a00;border:1px solid rgba(154,122,0,0.3)">${htmlEsc(seasonText)}</span>`;
+  } else if (seasonText) {
+    seasonSmall = `<span class="season-badge" style="font-size:9px">${htmlEsc(seasonText)}</span>`;
+  }
+
+  const detailImg = "";
+  const typeHTML = show.showType ? `<span class="type-label">${htmlEsc(show.showType)}</span>` : "";
+  const epHTML = show.episodeName && show.episodeName !== show.title ? `<p class="ep-name">"${htmlEsc(show.episodeName)}"</p>` : "";
+
+  // IMDb link
+  const imdbHTML = show.imdbId
+    ? `<a href="https://www.imdb.com/title/${htmlEsc(show.imdbId)}/" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;text-decoration:none;padding:5px 12px;border-radius:20px;background:rgba(45,90,39,0.08);border:1px solid rgba(45,90,39,0.25);transition:background 0.2s,border-color 0.2s" onmouseover="this.style.background='rgba(45,90,39,0.15)';this.style.borderColor='rgba(45,90,39,0.45)'" onmouseout="this.style.background='rgba(45,90,39,0.08)';this.style.borderColor='rgba(45,90,39,0.25)'"><span style="font-size:11px;font-weight:600;color:rgba(45,90,39,0.85);font-family:'JetBrains Mono',monospace;letter-spacing:0.3px">IMDb ↗</span></a>`
+    : "";
+
+  // Watch link (Amazon affiliate) — only renders when buildWatchUrl returns a monetizable destination.
+  // rel="sponsored nofollow noopener" per Amazon Associates + Google guidance for paid links.
+  const watch = buildWatchUrl(show);
+  const watchHTML = watch
+    ? `<a href="${htmlEsc(watch.url)}" target="_blank" rel="sponsored nofollow noopener" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;margin-left:6px;text-decoration:none;padding:5px 12px;border-radius:20px;background:rgba(45,90,39,0.08);border:1px solid rgba(45,90,39,0.25);transition:background 0.2s,border-color 0.2s" onmouseover="this.style.background='rgba(45,90,39,0.15)';this.style.borderColor='rgba(45,90,39,0.45)'" onmouseout="this.style.background='rgba(45,90,39,0.08)';this.style.borderColor='rgba(45,90,39,0.25)'"><span style="font-size:11px;font-weight:600;color:rgba(45,90,39,0.85);font-family:'JetBrains Mono',monospace;letter-spacing:0.3px">${htmlEsc(watch.label)} ↗</span></a>`
+    : "";
+
+  // Extra episodes — collapsible, closed by default
+  const extraEpsId = `eps-${show.id.replace(/[^a-zA-Z0-9-]/g, "")}`;
+  const totalEpCount = extraCount + 1;
+  const extraEpisodesHTML = extraCount > 0 ? `<div class="summary-section" style="margin-top:10px" id="${extraEpsId}">
+    <div class="summary-toggle" onclick="event.stopPropagation();document.getElementById('${extraEpsId}').classList.toggle('open')">
+      <span class="toggle-icon">▾</span>
+      <span class="toggle-label">${totalEpCount} Episodes Airing</span>
+    </div>
+    <div class="summary-body">
+      <div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(74,59,40,0.03);border-radius:8px;border:1px solid rgba(74,59,40,0.05)">
+          ${show.season ? `<span class="season-badge" style="font-size:9px;flex-shrink:0">${htmlEsc(show.season)}</span>` : ""}
+          <span style="font-size:11px;color:rgba(74,59,40,0.5);font-family:'DM Sans',sans-serif;flex:1">${htmlEsc(show.episodeName || "")}</span>
+        </div>
+        ${show.extraEpisodes.map(e => `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(74,59,40,0.03);border-radius:8px;border:1px solid rgba(74,59,40,0.05)">
+          ${e.season ? `<span class="season-badge" style="font-size:9px;flex-shrink:0">${htmlEsc(e.season)}</span>` : ""}
+          <span style="font-size:11px;color:rgba(74,59,40,0.5);font-family:'DM Sans',sans-serif;flex:1">${htmlEsc(e.episodeName || "")}</span>
+        </div>`).join("")}
+      </div>
+    </div>
+  </div>` : "";
+
+  // Build episode summary (always visible, no toggle)
+  const epSummaryId = `ep-${show.id.replace(/[^a-zA-Z0-9-]/g, "")}`;
+  let epSummaryHTML = "";
+  if (show.epDescription) {
+    epSummaryHTML = `<div class="summary-section open" id="${epSummaryId}">
+      <div class="summary-toggle" onclick="toggleSummary(event, '${epSummaryId}')">
+        <span class="toggle-icon">▾</span>
+        <span class="toggle-label">Episode Summary</span>
+      </div>
+      <div class="summary-body">
+        <p class="desc" style="color:rgba(74,59,40,0.5);margin-top:4px">${htmlEsc(show.epDescription)}${show.epDescription.length >= 300 ? "…" : ""}</p>
+      </div>
+    </div>`;
+  }
+
+  // Build show summary (collapsible — open by default for S1, closed otherwise)
+  const showSummaryId = `ss-${show.id.replace(/[^a-zA-Z0-9-]/g, "")}`;
+  let showSummaryHTML = "";
+  if (show.showDescription) {
+    const openClass = show.isSeason1 ? " open" : "";
+    showSummaryHTML = `<div class="summary-section${openClass}" id="${showSummaryId}">
+      <div class="summary-toggle" onclick="toggleSummary(event, '${showSummaryId}')">
+        <span class="toggle-icon">▾</span>
+        <span class="toggle-label">Show Summary</span>
+      </div>
+      <div class="summary-body">
+        <p class="desc" style="margin-top:4px">${htmlEsc(show.showDescription)}${show.showDescription.length >= 500 ? "…" : ""}</p>
+      </div>
+    </div>`;
+  }
+
+  const premiereHTML = show.isPremiere ? `<span class="premiere-badge" style="background:linear-gradient(135deg,${gs.accent},${gs.accent}cc)">Premiere</span>` : "";
+  const timeDisplay = fmt12h(show.time) + (show.tz && show.time !== "Streaming" && show.time !== "TBA" ? ` ${show.tz}` : "");
+
+  const animStyle = state.mode === "premieres" ? "" : `animation:fadeSlideIn 0.35s ease-out both;animation-delay:${delay}ms;`;
+  const filteredClass = show._excludeReason ? " is-filtered" : "";
+  const filteredBadge = show._excludeReason ? `<span class="filter-badge" title="Would be filtered">${htmlEsc(show._excludeReason)}</span>` : "";
+  return `<div class="show-row${filteredClass}" id="${cardId}" onclick="toggleCard('${cardId}')" style="background:linear-gradient(135deg,${gs.accent}14,#EDE6D6);${animStyle}">
+    <div class="glow" style="background:radial-gradient(circle at top right,${gs.accent}10,transparent 70%)"></div>
+    <div class="summary">
+      ${thumbHTML}
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="title">${htmlEsc(show.title)}</span>${seasonSmall}${extraBadge}${filteredBadge}
+          <span class="chevron" style="margin-left:auto">▾</span>
+        </div>
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-top:4px;min-width:0">
+          ${premiereDot}
+          <span class="genre-pip" style="color:${gs.accent};background:${gs.accent}15;flex-shrink:0">${htmlEsc(show.genre === "Other" && show.showType ? show.showType : show.genre)}</span>
+          ${(() => {
+            const s = getStreamingHome(show.network);
+            const isSelf = s && show.network.toLowerCase().includes(s.toLowerCase());
+            if (s && !isSelf) {
+              return `<span style="display:inline-flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap"><span class="network-sm" style="color:${gs.accent};word-break:break-word">${htmlEsc(show.network)}</span><span class="network-sm" style="color:rgba(74,59,40,0.5);flex-shrink:0">→</span><span class="network-sm" style="color:${gs.accent};flex-shrink:0;white-space:nowrap">${s}</span></span>`;
+            }
+            return `<span class="network-sm" style="color:${gs.accent};word-break:break-word">${htmlEsc(show.network)}</span>`;
+          })()}
+        </div>
+      </div>
+    </div>
+    <div class="details">
+      <div class="details-inner">
+        ${detailImg}
+        <div class="detail-info">
+          <div class="meta">
+            <span class="time">${timeDisplay}</span>
+            ${typeHTML}
+          </div>
+          ${epHTML}
+          ${showSummaryHTML}
+          ${epSummaryHTML}
+          ${imdbHTML}${watchHTML}
+          ${extraEpisodesHTML}
+          <div class="tags">
+            <span class="genre-tag" style="color:${gs.accent};background:${gs.accent}15">${htmlEsc(show.genre)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+
+
+function setMode(mode) {
+  state.mode = mode;
+  state.networkFilter = "All";
+  document.getElementById("btnGuide").classList.toggle("active", mode === "guide");
+  document.getElementById("btnCalendar").classList.toggle("active", mode === "calendar");
+  document.getElementById("btnPremieres").classList.toggle("active", mode === "premieres");
+  document.getElementById("dateRibbon").style.display = mode === "guide" ? "" : "none";
+  document.getElementById("premieresRibbon").style.display = mode === "premieres" ? "" : "none";
+  document.getElementById("calendarWrap").style.display = mode === "calendar" ? "" : "none";
+  document.getElementById("weekBtns").style.display = mode === "guide" ? "" : "none";
+  document.getElementById("premieresNav").style.display = mode === "premieres" ? "" : "none";
+
+  if (mode === "guide") {
+    // Reset to yesterday/today/tomorrow
+    state.selectedDates.clear();
+    const yest = new Date(); yest.setDate(yest.getDate() - 1);
+    const tod = new Date();
+    const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
+    [yest, tod, tmrw].forEach(d => {
+      const dk = dateKey(d);
+      state.selectedDates.add(dk);
+      fetchDate(dk);
+    });
+    setTimeout(() => {
+      const btn = document.getElementById("dateTodayBtn");
+      const ribbon = document.getElementById("dateRibbon");
+      if (btn && ribbon) {
+        const left = btn.offsetLeft - ribbon.offsetWidth / 2 + btn.offsetWidth / 2;
+        ribbon.scrollTo({ left, behavior: "smooth" });
+      }
+    }, 100);
+  }
+
+  if (mode === "calendar") {
+    // Reset to current month, today selected
+    state.calendarMonth = new Date();
+    state.selectedDates.clear();
+    const dk = dateKey(new Date());
+    state.selectedDates.add(dk);
+    fetchDate(dk);
+    renderCalendar();
+  }
+
+  if (mode === "premieres") {
+    state.premieresWeekOffset = 0;
+    state.selectedDates.clear();
+    const sunday = getSundayOfWeek(0);
+    for (let i = 0; i <= 6; i++) {
+      const d = new Date(sunday); d.setDate(sunday.getDate() + i);
+      const dk = dateKey(d);
+      state.selectedDates.add(dk);
+      fetchDate(dk);
+    }
+    renderPremieresRibbon();
+  }
+
+  render();
+}
+
+function renderCalendar() {
+  const wrap = document.getElementById("calendarWrap");
+  const m = state.calendarMonth;
+  const year = m.getFullYear();
+  const month = m.getMonth();
+  const monthName = m.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  const todayDk = dateKey(today);
+
+  // ±3 month boundary check
+  const todayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const monthDiff = (year - todayMonth.getFullYear()) * 12 + (month - todayMonth.getMonth());
+  const atPastLimit = monthDiff <= -3;
+  const atFutureLimit = monthDiff >= 3;
+
+  let cells = "";
+  for (let i = 0; i < firstDay; i++) {
+    cells += `<div class="calendar-day empty"></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const dk = dateKey(date);
+    const isToday = dk === todayDk;
+    const isPast = date < today && !isToday;
+    const isSelected = state.selectedDates.has(dk);
+
+    const shows = state.showsByDate[dk] || [];
+
+    let dots = "";
+
+    const searchHighlight = "";
+    const classes = ["calendar-day", isToday ? "today" : "", isSelected ? "selected" : "", isPast ? "past" : ""].filter(Boolean).join(" ");
+
+    cells += `<div class="${classes}" onclick="calendarSelectDay('${dk}')">
+      <span class="pday-num">${d}</span>
+      <div class="pday-dots">${dots}</div>
+    </div>`;
+  }
+
+  wrap.innerHTML = `<div class="calendar-header">
+    <span class="calendar-month-label">${monthName}</span>
+    <div class="calendar-nav">
+      <button onclick="calendarPrevMonth()" ${atPastLimit ? "disabled" : ""}>‹</button>
+      <button onclick="calendarNextMonth()" ${atFutureLimit ? "disabled" : ""}>›</button>
+    </div>
+  </div>
+  <div class="calendar-weekdays">
+    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+  </div>
+  <div class="calendar-grid">${cells}</div>`;
+}
+
+function calendarSelectDay(dk) {
+  state.selectedDates.clear();
+  state.selectedDates.add(dk);
+  fetchDate(dk);
+  renderCalendar();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  // Silently prefetch adjacent days
+  const d = new Date(dk + "T12:00:00");
+  const prev = new Date(d); prev.setDate(d.getDate() - 1);
+  const next = new Date(d); next.setDate(d.getDate() + 1);
+  fetchDate(dateKey(prev));
+  fetchDate(dateKey(next));
+}
+
+function calendarPrevMonth() {
+  state.calendarMonth = new Date(state.calendarMonth.getFullYear(), state.calendarMonth.getMonth() - 1, 1);
+  renderCalendar();
+}
+
+function calendarNextMonth() {
+  state.calendarMonth = new Date(state.calendarMonth.getFullYear(), state.calendarMonth.getMonth() + 1, 1);
+  renderCalendar();
+}
+
+// Render
+function render() {
+  if (state.mode === "calendar") renderCalendar();
+  // Country picker
+  const countryOptions = [
+    { code: "ALL", label: "ALL" },
+    { code: "US", label: "🇺🇸 US" },
+    { code: "GB", label: "🇬🇧 UK" },
+    { code: "CA", label: "🇨🇦 CA" },
+    { code: "AU", label: "🇦🇺 AU" },
+  ];
+  const allSelected = state.countries.size === ALL_COUNTRIES.length;
+  document.getElementById("countryBar").innerHTML = countryOptions.map(c => {
+    const active = c.code === "ALL" ? allSelected : state.countries.has(c.code);
+    return `<button class="country-btn${active ? " active" : ""}" onclick="toggleCountry('${c.code}')">${c.label}</button>`;
+  }).join("");
+
+  const activeDates = [...state.selectedDates].sort();
+
+  const allShows = activeDates.flatMap(d => state.showsByDate[d] || []);
+  const anyLoading = activeDates.some(d => state.loadingDates.has(d));
+
+  // Build and update network dropdown from current data
+  const networkFilterWrap = document.getElementById("networkFilterWrap");
+  const networkSelect = document.getElementById("networkSelect");
+  if (networkFilterWrap && networkSelect) {
+    const networks = [...new Set(allShows.map(s => s.network).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+    if (networks.length > 1) {
+      // Only rebuild options if networks changed
+      const optKey = networks.join("|");
+      if (networkSelect._lastOptKey !== optKey) {
+        networkSelect._lastOptKey = optKey;
+        networkSelect.innerHTML = `<option value="All">All Networks</option>` +
+          networks.map(n => `<option value="${htmlEsc(n)}">${htmlEsc(n)}</option>`).join("");
+      }
+      networkSelect.value = state.networkFilter;
+      networkSelect.classList.toggle("active", state.networkFilter !== "All");
+      networkFilterWrap.style.display = "";
+    } else {
+      networkFilterWrap.style.display = "none";
+      state.networkFilter = "All";
+    }
+  }
+  const ribbon = document.getElementById("dateRibbon");
+  ribbon.innerHTML = allDates.map(d => {
+    const dk = dateKey(d);
+    const selected = state.selectedDates.has(dk);
+    const today = isToday(dk);
+    const loading = state.loadingDates.has(dk);
+    const count = (state.showsByDate[dk] || []).length;
+    const hasData = !!state.showsByDate[dk];
+    const past = isPast(dk);
+
+    let label = d.toLocaleDateString("en-US", { weekday: "short" });
+    if (today) label = "Today";
+    else if (isYesterday(dk)) label = "Yest";
+    else if (isTomorrow(dk)) label = "Tmrw";
+
+    const classes = ["date-btn", today ? "today" : "", selected ? "selected" : "", past ? "past" : ""].filter(Boolean).join(" ");
+    const loadingDot = selected && loading ? `<div class="loading-dot"></div>` : "";
+    const countHTML = selected && hasData && !loading ? `<span class="count">${count}</span>` : "";
+
+    return `<button class="${classes}" onclick="toggleDate('${dk}')" ${today ? 'id="dateTodayBtn"' : ""}>
+      <span class="day-label">${label}</span>
+      <span class="day-num">${d.getDate()}</span>
+      <span class="day-month">${d.toLocaleDateString("en-US",{month:"short"})}</span>
+      ${loadingDot}${countHTML}
+    </button>`;
+  }).join("");
+
+  if (allShows.length === 0 && anyLoading) {
+    document.getElementById("content").innerHTML = `<div class="loading-state"><div class="loading-dots"><span>🥔</span><span>🥔</span><span>🥔</span></div><p class="loading-text">Loading schedule...</p></div>`;
+    return;
+  }
+
+  if (allShows.length === 0 && !anyLoading) {
+    document.getElementById("content").innerHTML = "";
+    return;
+  }
+
+  // Show sections grouped by date
+  let contentHTML = "";
+  activeDates.forEach(dk => {
+    let shows = (state.showsByDate[dk] || []);
+    if (state.mode === "premieres") shows = shows.filter(s => s.isPremiere);
+    if (state.networkFilter !== "All") shows = shows.filter(s => s.network === state.networkFilter);
+
+    const d = new Date(dk + "T12:00:00");
+    const loading = state.loadingDates.has(dk);
+    if (shows.length === 0 && !loading) return;
+
+    let label = fmtDate(d);
+    let todayClass = "";
+    if (isToday(dk)) { label = "Today"; todayClass = " today"; }
+    else if (isYesterday(dk)) label = "Yesterday";
+    else if (isTomorrow(dk)) label = "Tomorrow";
+
+    const premiereCount = shows.filter(s => s.isPremiere).length;
+    const premiereLabel = premiereCount > 0 ? ` · <span style="color:#2D5A27">${premiereCount} premiere${premiereCount !== 1 ? "s" : ""}</span>` : "";
+
+    contentHTML += `<div class="date-section">
+      <div class="date-header">
+        <h2 class="${todayClass}">${label}</h2>
+        <div class="line"></div>
+        <span class="count">${shows.length} show${shows.length !== 1 ? "s" : ""}${premiereLabel}</span>
+      </div>`;
+
+    if (loading && shows.length === 0) {
+      contentHTML += `<div class="mini-loading"><span>🥔</span><span>🥔</span><span>🥔</span></div>`;
+    }
+
+    const isPremieresMode = state.mode === "premieres";
+    // Premieres always break out at top (any showType)
+    const premieres = isPremieresMode ? [] : shows.filter(s => s.isPremiere);
+    const nonPremieres = isPremieresMode ? shows : shows.filter(s => !s.isPremiere);
+    const talkShows = isPremieresMode ? [] : nonPremieres.filter(s => s.showType === "Talk Show");
+    const gameShows = isPremieresMode ? [] : nonPremieres.filter(s => s.showType === "Game Show");
+    const realityShows = isPremieresMode ? [] : nonPremieres.filter(s => s.showType === "Reality" || s.showType === "Documentary");
+    const regularShows = isPremieresMode
+      ? shows
+      : nonPremieres.filter(s => !["Talk Show", "Game Show", "Reality", "Documentary"].includes(s.showType));
+    const realityGroupId = `realitygroup-${dk}`;
+    const talkGroupId = `talkgroup-${dk}`;
+    const gameGroupId = `gamegroup-${dk}`;
+
+    let showListHTML = "";
+
+    // Premieres: flat at top, no container
+    if (premieres.length > 0) {
+      showListHTML += `<div class="show-list">${premieres.map((s, i) => showCardHTML(s, i)).join("")}</div>`;
+    }
+
+    // Regular shows: flat list (no container)
+    if (regularShows.length > 0) {
+      showListHTML += `<div class="show-list">${regularShows.map((s, i) => showCardHTML(s, i)).join("")}</div>`;
+    }
+
+    if (!isPremieresMode && realityShows.length > 0) {
+      // Reality: open-by-default container
+      showListHTML += `<div class="talkshow-group open" id="${realityGroupId}">
+        <div class="talkshow-toggle" onclick="toggleTalkShows('${realityGroupId}')">
+          <span class="talkshow-toggle-label">🎭 Reality & Docs</span>
+          <span class="talkshow-toggle-count">${realityShows.length} show${realityShows.length !== 1 ? "s" : ""}</span>
+          <span class="talkshow-toggle-chevron">▾</span>
+        </div>
+        <div class="talkshow-list">${realityShows.map((s, i) => showCardHTML(s, i)).join("")}</div>
+      </div>`;
+    }
+
+    if (gameShows.length > 0) {
+      showListHTML += `<div class="talkshow-group" id="${gameGroupId}">
+        <div class="talkshow-toggle" onclick="toggleTalkShows('${gameGroupId}')">
+          <span class="talkshow-toggle-label">🎮 Game Shows</span>
+          <span class="talkshow-toggle-count">${gameShows.length} show${gameShows.length !== 1 ? "s" : ""}</span>
+          <span class="talkshow-toggle-chevron">▾</span>
+        </div>
+        <div class="talkshow-list">${gameShows.map((s, i) => showCardHTML(s, i)).join("")}</div>
+      </div>`;
+    }
+
+    if (talkShows.length > 0) {
+      showListHTML += `<div class="talkshow-group" id="${talkGroupId}">
+        <div class="talkshow-toggle" onclick="toggleTalkShows('${talkGroupId}')">
+          <span class="talkshow-toggle-label">📺 Talk Shows</span>
+          <span class="talkshow-toggle-count">${talkShows.length} show${talkShows.length !== 1 ? "s" : ""}</span>
+          <span class="talkshow-toggle-chevron">▾</span>
+        </div>
+        <div class="talkshow-list">${talkShows.map((s, i) => showCardHTML(s, i)).join("")}</div>
+      </div>`;
+    }
+
+    contentHTML += showListHTML + `</div>`;
+  });
+
+  if (contentHTML === "" && state.networkFilter !== "All" && !anyLoading) {
+    contentHTML = `<div style="text-align:center;padding:60px 20px">
+      <p style="color:rgba(74,59,40,0.85);font-size:13px;font-family:'JetBrains Mono',monospace">No ${htmlEsc(state.networkFilter)} shows today</p>
+      <p style="color:rgba(74,59,40,0.4);font-size:11px;font-family:'JetBrains Mono',monospace;margin-top:6px">Try another day</p>
+      <button onclick="setNetworkFilter('All')" style="margin-top:20px;padding:8px 18px;border-radius:20px;border:1px solid rgba(45,90,39,0.4);background:rgba(45,90,39,0.12);color:#2D5A27;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;cursor:pointer;letter-spacing:0.3px">Show all networks</button>
+    </div>`;
+  }
+
+  const contentEl = document.getElementById("content");
+  if (contentEl._lastHTML !== contentHTML) {
+    contentEl._lastHTML = contentHTML;
+    contentEl.innerHTML = contentHTML;
+    initLazyImages();
+  }
+}
+
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+}
+
+function setNetworkFilter(val) {
+  state.networkFilter = val;
+  const sel = document.getElementById("networkSelect");
+  if (sel) sel.classList.toggle("active", val !== "All");
+  render();
+}
+
+function getCurrentOffset() {
+  const today = dateKey(new Date());
+  const sorted = [...state.selectedDates].sort();
+  if (sorted.length === 0) return 0;
+  // Use the middle/first selected date as reference
+  const ref = sorted[Math.floor(sorted.length / 2)];
+  const refDate = new Date(ref + "T12:00:00");
+  const todayDate = new Date(today + "T12:00:00");
+  return Math.round((refDate - todayDate) / 86400000);
+}
+
+function getSundayOfWeek(offsetWeeks) {
+  const today = new Date();
+  const day = today.getDay(); // 0=Sun
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() - day + offsetWeeks * 7);
+  sunday.setHours(0,0,0,0);
+  return sunday;
+}
+
+function renderPremieresRibbon() {
+  const ribbon = document.getElementById("premieresRibbon");
+  if (!ribbon) return;
+  const currentOffset = state.premieresWeekOffset;
+  let html = "";
+  for (let w = -6; w <= 6; w++) {
+    const sunday = getSundayOfWeek(w);
+    const label = w === 0 ? "This Week" : w === -1 ? "Last Week" : w === 1 ? "Next Week" : w < 0 ? `${Math.abs(w)}w ago` : `In ${w}w`;
+    const dateStr = sunday.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const isSelected = w === currentOffset;
+    const isCurrent = w === 0;
+    const classes = ["week-pill", isCurrent ? "current" : "", isSelected ? "selected" : ""].filter(Boolean).join(" ");
+
+    // Count premieres for this week
+    let premiereCount = 0;
+    for (let i = 0; i <= 6; i++) {
+      const d = new Date(sunday); d.setDate(sunday.getDate() + i);
+      const dk = dateKey(d);
+      const shows = state.showsByDate[dk] || [];
+      premiereCount += shows.filter(s => s.isPremiere).length;
+    }
+    const countHTML = premiereCount > 0
+      ? `<span class="pill-count">${premiereCount} new</span>`
+      : `<span class="pill-count" style="opacity:0">0</span>`;
+
+    html += `<div class="${classes}" onclick="selectPremiereWeek(${w})">
+      <span class="pill-label">${label}</span>
+      <span class="pill-num">${sunday.getDate()}</span>
+      <span class="pill-month">${sunday.toLocaleDateString("en-US", { month: "short" })}</span>
+      ${countHTML}
+    </div>`;
+  }
+  ribbon.innerHTML = html;
+  // Scroll selected into view — use longer timeout for mobile rendering
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const selected = ribbon.querySelector(".selected");
+      if (selected && ribbon) {
+        const left = selected.offsetLeft - ribbon.offsetWidth / 2 + selected.offsetWidth / 2;
+        ribbon.scrollLeft = left;
+      }
+    });
+  });
+}
+
+function selectPremiereWeek(w) {
+  state.premieresWeekOffset = w;
+  state.selectedDates.clear();
+  const sunday = getSundayOfWeek(state.premieresWeekOffset);
+  for (let i = 0; i <= 6; i++) {
+    const d = new Date(sunday); d.setDate(sunday.getDate() + i);
+    const dk = dateKey(d);
+    state.selectedDates.add(dk);
+    fetchDate(dk);
+  }
+  // Silently prefetch adjacent weeks
+  [-1, 1].forEach(adj => {
+    const adjSunday = getSundayOfWeek(state.premieresWeekOffset + adj);
+    for (let i = 0; i <= 6; i++) {
+      const d = new Date(adjSunday); d.setDate(adjSunday.getDate() + i);
+      fetchDate(dateKey(d));
+    }
+  });
+  renderPremieresRibbon();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  render();
+}
+
+function navPremiereWeek(direction) {
+  if (direction === 0) {
+    state.premieresWeekOffset = 0;
+  } else {
+    state.premieresWeekOffset += direction;
+  }
+  state.selectedDates.clear();
+  const sunday = getSundayOfWeek(state.premieresWeekOffset);
+  for (let i = 0; i <= 6; i++) {
+    const d = new Date(sunday); d.setDate(sunday.getDate() + i);
+    const dk = dateKey(d);
+    state.selectedDates.add(dk);
+    fetchDate(dk);
+  }
+  // Silently prefetch adjacent weeks
+  [-1, 1].forEach(adj => {
+    const adjSunday = getSundayOfWeek(state.premieresWeekOffset + adj);
+    for (let i = 0; i <= 6; i++) {
+      const d = new Date(adjSunday); d.setDate(adjSunday.getDate() + i);
+      fetchDate(dateKey(d));
+    }
+  });
+  renderPremieresRibbon();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  render();
+}
+
+function navPrev() {
+  const offset = getCurrentOffset();
+  selectSingleDate(offset - 1);
+}
+
+function navNext() {
+  const offset = getCurrentOffset();
+  selectSingleDate(offset + 1);
+}
+
+const ALL_COUNTRIES = ["US", "GB", "CA", "AU"];
+
+function toggleCountry(code) {
+  if (code === "ALL") {
+    if (state.countries.size === ALL_COUNTRIES.length) return; // already all selected
+    state.countries.clear();
+    ALL_COUNTRIES.forEach(c => state.countries.add(c));
+  } else {
+    if (state.countries.has(code) && state.countries.size === 1) return; // already the only one selected
+    state.countries.clear();
+    state.countries.add(code);
+  }
+  // Clear ALL cached data so it re-fetches cleanly
+  state.showsByDate = {};
+  state.fetchedDates.clear();
+  state.loadingDates.clear();
+  state.networkFilter = "All";
+  // Re-fetch all currently selected dates
+  state.selectedDates.forEach(dk => fetchDate(dk));
+  render();
+}
+
+// Init
+const yest = new Date(); yest.setDate(yest.getDate() - 1);
+const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
+state.selectedDates.add(dateKey(yest));
+state.selectedDates.add(dateKey(new Date()));
+state.selectedDates.add(dateKey(tmrw));
+render();
+// Fetch the 3 visible days immediately
+fetchDate(dateKey(yest));
+fetchDate(dateKey(new Date()));
+fetchDate(dateKey(tmrw));
+// Silently prefetch 2 days beyond the visible window
+const twoDaysAgo = new Date(); twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+const twoDaysAhead = new Date(); twoDaysAhead.setDate(twoDaysAhead.getDate() + 2);
+fetchDate(dateKey(twoDaysAgo));
+fetchDate(dateKey(twoDaysAhead));
+
+// Scroll to today
+setTimeout(() => {
+  const btn = document.getElementById("dateTodayBtn");
+  const ribbon = document.getElementById("dateRibbon");
+  if (btn && ribbon) {
+    const left = btn.offsetLeft - ribbon.offsetWidth / 2 + btn.offsetWidth / 2;
+    ribbon.scrollTo({ left, behavior: "smooth" });
+  }
+}, 200);
+// Debug mode — tap logo 5 times
+function initLazyImages() {
+  const imgs = document.querySelectorAll("img.lazy-img[data-src]");
+  if (!imgs.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.removeAttribute("data-src");
+        img.onload = () => { img.style.opacity = "1"; };
+        observer.unobserve(img);
+      }
+    });
+  }, { rootMargin: "200px" });
+  imgs.forEach(img => observer.observe(img));
+}
+
+let _debugTapCount = 0;
+let _debugTapTimer = null;
+function handleLogTap() {
+  _debugTapCount++;
+  clearTimeout(_debugTapTimer);
+  _debugTapTimer = setTimeout(() => { _debugTapCount = 0; }, 2000);
+  if (_debugTapCount >= 5) {
+    _debugTapCount = 0;
+    state.debugMode = !state.debugMode;
+    // Clear cache so data re-fetches with new filter state
+    state.showsByDate = {};
+    state.fetchedDates.clear();
+    state.loadingDates.clear();
+    updateDebugBanner();
+    state.selectedDates.forEach(dk => fetchDate(dk));
+    render();
+  }
+}
+
+function updateDebugBanner() {
+  let banner = document.getElementById("debugBanner");
+  if (state.debugMode) {
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "debugBanner";
+      banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(168,48,42,0.9);color:#F5F0E8;font-size:11px;font-family:'JetBrains Mono',monospace;text-align:center;padding:4px;letter-spacing:1px;backdrop-filter:blur(4px)";
+      banner.textContent = "⚠ DEBUG MODE — ALL FILTERS DISABLED — tap 🥔 5x to exit";
+      document.body.prepend(banner);
+    }
+  } else {
+    if (banner) banner.remove();
+  }
+}
+
+// === Hash-based deep linking ===
+const VALID_HASH_MODES = new Set(["guide", "calendar", "premieres"]);
+
+const _originalSetMode = setMode;
+setMode = function(mode) {
+  _originalSetMode(mode);
+  if (VALID_HASH_MODES.has(mode) && window.location.hash.slice(1) !== mode) {
+    history.replaceState(null, "", "#" + mode);
+  }
+};
+
+function applyHashRoute() {
+  const hash = window.location.hash.slice(1).toLowerCase();
+  if (VALID_HASH_MODES.has(hash) && hash !== state.mode) {
+    setMode(hash);
+  }
+}
+applyHashRoute();
+window.addEventListener("hashchange", applyHashRoute);
+
+// === Floating scroll-to-top button ===
+(function setupScrollTopButton() {
+  const btn = document.getElementById("scrollTopBtn");
+  if (!btn) return;
+  const SHOW_AFTER_PX = 600;
+  let ticking = false;
+
+  // Get current scroll position from whichever element is actually scrolling.
+  // Some browsers/configs scroll the <html> element instead of window,
+  // so check both and use whichever is non-zero.
+  function getScrollY() {
+    return window.scrollY ||
+           document.documentElement.scrollTop ||
+           document.body.scrollTop || 0;
+  }
+
+  function updateVisibility() {
+    if (getScrollY() > SHOW_AFTER_PX) {
+      btn.classList.add("visible");
+    } else {
+      btn.classList.remove("visible");
+    }
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      window.requestAnimationFrame(updateVisibility);
+      ticking = true;
+    }
+  }
+
+  // Listen on multiple targets to catch whichever one fires
+  window.addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("scroll", onScroll, { passive: true });
+
+  btn.addEventListener("click", () => {
+    // Scroll the document/html element since that's what's actually scrollable
+    if (document.documentElement.scrollTop > 0 || document.body.scrollTop > 0) {
+      document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+      document.body.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  // Run once on load to set initial state
+  updateVisibility();
+})();
+
+// === Push notifications ===
+(function setupPushNotifications() {
+  if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+
+  const PushNotifications = window.Capacitor.Plugins.PushNotifications;
+  const App = window.Capacitor.Plugins.App;
+  if (!PushNotifications) return;
+
+  // Request permission then register with FCM
+  PushNotifications.requestPermissions().then(result => {
+    if (result.receive === "granted") {
+      PushNotifications.register();
+    } else {
+      console.log("Push notification permission denied");
+    }
+  });
+
+  // Device registered with FCM — token available
+  PushNotifications.addListener("registration", token => {
+    console.log("FCM token:", token.value);
+    // Token is logged — useful for testing. In production,
+    // you'd send this to your backend to store per-user.
+    // For broadcast pushes via Firebase Console, you don't need it.
+  });
+
+  // Registration failed
+  PushNotifications.addListener("registrationError", err => {
+    console.error("Push registration error:", err.error);
+  });
+
+  // Notification received while app is in foreground
+  PushNotifications.addListener("pushNotificationReceived", notification => {
+    console.log("Push received:", notification);
+    // App is open — you could show a custom in-app toast here
+    // For now, we just log it. The notification won't show in the tray
+    // when the app is foregrounded on Android unless you handle it.
+  });
+
+  // User tapped a notification (app was in background/closed)
+  PushNotifications.addListener("pushNotificationActionPerformed", action => {
+    console.log("Push tapped:", action);
+    // Deep link based on notification data
+    const data = action.notification.data || {};
+    if (data.tab && VALID_HASH_MODES.has(data.tab)) {
+      setMode(data.tab);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // Default: open premieres tab
+      setMode("premieres");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+})();
+
+// === Android back button ===
+(function setupNativeBackButton() {
+  if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+
+  const App = window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if (!App || !App.addListener) return;
+
+  // Toast helper
+  let toastEl = null;
+  let toastTimer = null;
+  function showToast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.style.cssText =
+        "position:fixed;left:50%;bottom:96px;transform:translateX(-50%);" +
+        "background:rgba(245,240,232,0.92);color:rgba(28,18,8,0.92);" +
+        "font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;" +
+        "text-transform:uppercase;padding:8px 16px;border-radius:6px;" +
+        "border:1px solid rgba(45,90,39,0.25);" +
+        "backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);" +
+        "z-index:99999;pointer-events:none;opacity:0;transition:opacity 0.18s ease;" +
+        "white-space:nowrap;";
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    requestAnimationFrame(() => { toastEl.style.opacity = "1"; });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastEl.style.opacity = "0"; }, 1800);
+  }
+
+  function isFreshState() {
+    const yest = new Date(); yest.setDate(yest.getDate() - 1);
+    const today = new Date();
+    const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
+    const expectedKeys = [dateKey(yest), dateKey(today), dateKey(tmrw)];
+    const hasExpectedDates =
+      state.selectedDates.size === expectedKeys.length &&
+      expectedKeys.every(k => state.selectedDates.has(k));
+    const defaultNetwork = state.networkFilter === "All";
+    const defaultCountry = state.countries.size === 1 && state.countries.has("US");
+    return hasExpectedDates && defaultNetwork && defaultCountry;
+  }
+
+  function resetToFreshState() {
+    state.networkFilter = "All";
+    state.countries = new Set(["US"]);
+    setMode("guide");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  let exitArmedAt = 0;
+  const EXIT_WINDOW_MS = 2000;
+
+  App.addListener("backButton", () => {
+    const openOverlay = document.querySelector(
+      ".modal.open, .overlay.open, [data-open=\"true\"]"
+    );
+    if (openOverlay) {
+      openOverlay.classList.remove("open");
+      openOverlay.removeAttribute("data-open");
+      return;
+    }
+
+    if (state.mode !== "guide") {
+      setMode("guide");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (!isFreshState()) {
+      resetToFreshState();
+      return;
+    }
+
+    const now = Date.now();
+    if (now - exitArmedAt > EXIT_WINDOW_MS) {
+      exitArmedAt = now;
+      showToast("Press back to exit");
+      return;
+    }
+
+    App.exitApp();
+  });
+})();
+</script>
+</body>
+</html>
